@@ -103,10 +103,18 @@ AND its phase-specific tests are green. Otherwise it is NOT done — log why.
 8. Log outcome (symptom, exact error, root cause, fix, how verified), update CURRENT STATE, and commit.
 
 ## CURRENT STATE (update this every session)
-- Phase: **0 — Foundation** (not started)
-- Last green-light check: none yet
+- Phase: **0 — Foundation** (in progress — steps 0.1–0.4 of 0.15 done, see plan in chat history)
+  - 0.1 Prerequisites confirmed: Node v22.12.0, npm 11.5.2, Git 2.45.2, GitHub account. Vercel/Neon/Clerk accounts still needed before steps 0.8/0.9/0.14.
+  - 0.2 Next.js 16.3.0 (App Router, React 19, TS, Tailwind, ESLint, `src/` dir) scaffolded and running (`npm run dev`). Fixed a Turbopack workspace-root warning by pinning `turbopack.root` in `next.config.ts` (unrelated stray lockfile in the Windows user home dir was confusing root detection).
+  - 0.3 Git initialized, pushed to `github.com/rad-code05/AetheriumByRad`. Initial scaffold commit landed directly on `main` as a one-time bootstrap exception (see Error Log below) — every commit after that follows branch → PR → review → merge.
+  - 0.4 shadcn/ui + Lucide installed; aurora "Clean & Energetic" palette (fetched from the Notion Memory page) wired into Tailwind's CSS-variable theme (`primary`/`secondary`/`highlight`/`violet`/`muted`, aurora gradient background, brand-gradient utilities). Shipped via PR #1 (squash-merged). GitHub CLI (`gh`) installed + authed as `rad-code05` to support this PR flow.
+  - Next up: 0.5 ESLint + strict TypeScript config verification.
+- Last green-light check: none yet (no `typecheck`/`test`/`test:e2e` scripts exist yet — added in later steps). Manually verified so far: `tsc --noEmit`, `npm run lint`, `npm run build` all pass.
 - Open blockers: none
-- Last commit note: (fill in at end of session)
+- Last commit note: `feat: add shadcn/ui + Lucide, apply aurora light theme` (PR #1, merged to main as 2b3fca9)
+
+### Error Log addendum
+- **Bootstrap direct-push-to-main** · Phase 0 · resolved. Symptom: initial scaffold commit was pushed straight to `main` via `git push -u origin main`, violating Golden Rule #5 ("never push straight to main"). Root cause: followed a GitHub quick-setup command snippet Rad pasted without reconciling it against CLAUDE.md's workflow rule first. Fix: Rad approved treating this one commit as a one-time bootstrap exception (nothing existed yet to PR against); every commit since (starting with PR #1) follows branch → PR → review → merge. Verified by: PR #1 opened/merged correctly for the next change.
 
 ## PHASE GATES (summary — full detail in Notion Memory)
 - P0 Foundation: app runs + deployed; Clerk login; user/admin gate; Neon+Prisma; empty dashboard; CI.
