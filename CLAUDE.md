@@ -103,7 +103,7 @@ AND its phase-specific tests are green. Otherwise it is NOT done — log why.
 8. Log outcome (symptom, exact error, root cause, fix, how verified), update CURRENT STATE, and commit.
 
 ## CURRENT STATE (update this every session)
-- Phase: **0 — Foundation** (in progress — steps 0.1–0.9 of 0.15 done, see plan in chat history)
+- Phase: **0 — Foundation** (in progress — steps 0.1–0.10 of 0.15 done, see plan in chat history)
   - 0.1 Prerequisites confirmed: Node v22.12.0, npm 11.5.2, Git 2.45.2, GitHub account. Vercel/Neon/Clerk accounts still needed before steps 0.8/0.9/0.14.
   - 0.2 Next.js 16.3.0 (App Router, React 19, TS, Tailwind, ESLint, `src/` dir) scaffolded and running (`npm run dev`). Fixed a Turbopack workspace-root warning by pinning `turbopack.root` in `next.config.ts` (unrelated stray lockfile in the Windows user home dir was confusing root detection).
   - 0.3 Git initialized, pushed to `github.com/rad-code05/AetheriumByRad`. Initial scaffold commit landed directly on `main` as a one-time bootstrap exception (see Error Log below) — every commit after that follows branch → PR → review → merge.
@@ -114,10 +114,11 @@ AND its phase-specific tests are green. Otherwise it is NOT done — log why.
   - 0.7 Playwright + Chromium browser binary installed; `playwright.config.ts` (auto-starts `npm run dev` via `webServer`, `baseURL: http://localhost:3000`); trivial smoke test `e2e/homepage.spec.ts` (checks the "Aetherium" heading renders). `npm run test:e2e` script added. Rad ran the test + did commit/PR/squash-merge himself. Shipped via PR #6 (squash-merged).
   - 0.8 Neon Postgres connected + Prisma 7 installed. Note: Prisma 7 changed significantly from older versions — CLI no longer auto-loads `.env` or reads the connection URL from `schema.prisma` (now in `prisma.config.ts`); the `prisma-client` generator requires an explicit `output` path; Postgres now needs the `@prisma/adapter-pg` driver adapter (confirmed via current docs, not assumed from training data). Minimal `User` model (`id`/`email`/`createdAt`) migrated via `npx prisma migrate dev --name init` (Rad ran this himself — it's the one command that touches the real database). Added `.env.example` (names only) + fixed a `.gitignore` bug where `.env*` would've also blocked `.env.example` from being committed. `postinstall: "prisma generate"` added so the generated (gitignored) client always exists after `npm install`. Rad hit a real merge conflict in `package.json`/`package-lock.json` (two branches both touched the `scripts` block) — resolved together, and agreed that future conflicts: Rad reads the conflict markers and makes the edit himself, Claude explains but doesn't touch the file. Shipped via PR #8 (squash-merged).
   - 0.9 Clerk integration: `@clerk/nextjs` installed; `src/middleware.ts` (`clerkMiddleware()`), `<ClerkProvider>` wrapping root layout, `/sign-in` and `/sign-up` pages (Clerk's pre-built components, optional catch-all routes `[[...sign-in]]`/`[[...sign-up]]`). Env vars for Clerk keys + routing added to `.env.example`. **Rad wrote all the Clerk files himself** (middleware/layout/sign-in/sign-up) with Claude explaining each — a deliberate step-specific choice for auth-sensitive code, see chat history. Hit + fixed two real mistakes together: `middleware.ts` was initially missing its `export default clerkMiddleware()` line (page failed to load), and the 4 non-secret Clerk routing env vars were initially missing from `.env`. Verified: sign-up + sign-in both load and a real test account was created; typecheck/lint/build all green. Shipped via PR #10 (squash-merged).
-  - Next up: 0.10 user/admin role gating (add `role` field to `User` model, minimal `/admin` route).
+  - 0.10 User/admin role gating: role stored in Clerk `publicMetadata` (not Postgres — see Decision Log addendum above for why + when to revisit). Clerk Dashboard config: Sessions → Customize session token → added `{"metadata": "{{user.public_metadata}}"}` claim; test admin account given `{"role": "admin"}` in Public metadata. Code: `src/types/globals.d.ts` (`CustomJwtSessionClaims` global type for the `metadata` claim) + `src/app/admin/page.tsx` (checks `sessionClaims?.metadata?.role !== "admin"`, redirects non-admins to `/`) — per Clerk's own docs this check belongs in the page, not `middleware.ts`/`auth.protect()`, since that only understands Organization roles, not custom metadata roles. **Rad wrote both files himself again** (third consecutive auth-sensitive step where he chose to write the code with Claude explaining, not Claude writing it — see [[feedback-code-writing-handoff]] pattern). Verified in browser: admin test account sees the page, signed-out/non-admin gets redirected; typecheck/lint/build all green. Shipped via PR #12 (squash-merged).
+  - Next up: 0.11 empty `/dashboard` route, gated behind login.
 - Last green-light check: none yet (`npx prisma migrate status` not yet re-verified post-merge; `test:e2e` doesn't cover Clerk flows yet — that's step 0.12). Currently green: `npm run typecheck`, `npm run lint`, `npm run test`, `npm run test:e2e`, `npm run build`.
 - Open blockers: none
-- Last commit note: `feat: add Clerk authentication (sign-in/sign-up, middleware)` (PR #10, squash-merged by Rad)
+- Last commit note: `feat: add user/admin role gating via Clerk metadata` (PR #12, squash-merged by Rad)
 
 ### Error Log addendum
 - **Bootstrap direct-push-to-main** · Phase 0 · resolved. Symptom: initial scaffold commit was pushed straight to `main` via `git push -u origin main`, violating Golden Rule #5 ("never push straight to main"). Root cause: followed a GitHub quick-setup command snippet Rad pasted without reconciling it against CLAUDE.md's workflow rule first. Fix: Rad approved treating this one commit as a one-time bootstrap exception (nothing existed yet to PR against); every commit since (starting with PR #1) follows branch → PR → review → merge. Verified by: PR #1 opened/merged correctly for the next change.
@@ -137,4 +138,14 @@ AND its phase-specific tests are green. Otherwise it is NOT done — log why.
 ## KEY DECISIONS (do not re-litigate — see Notion for rationale)
 Clerk (not Supabase auth) · E2B (not Vercel Sandbox) · tRPC (not REST/GraphQL) ·
 Neon+Prisma · Inngest for builds · Vercel AI SDK · Upstash Redis for resume ·
-No LangGraph for now · aurora light theme (never flat white) · Vitest+Playwright+RTL.
+No LangGraph for now · aurora light theme (never flat white) · Vitest+Playwright+RTL ·
+Role stored in Clerk `publicMetadata` for Phase 0 (not Postgres `User.role`) — see addendum below.
+
+### Decision Log addendum
+- **Role storage: Clerk metadata, not Postgres (for now)** · Phase 0, step 0.10. Role stored in
+  Clerk `publicMetadata` for Phase 0 — simplest working admin gate, no webhook/DB sync yet.
+  Rejected alternative: a `User.role` column in Postgres, which would require building a Clerk
+  webhook (verify signature, create/update `User` rows on sign-up) before it could even work —
+  more infrastructure than a Phase 0 proof-of-concept needs. **Revisit in Phase 4**: the admin
+  dashboard needs to query/list users by role from Postgres, so build a Clerk webhook then to
+  sync `role` into `User.role`.
