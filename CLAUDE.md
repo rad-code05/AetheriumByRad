@@ -63,6 +63,16 @@ real record**. Commit at the end of every session with a clear message of what c
 If the Notion connector is NOT enabled in Claude Code: keep notes in THIS file; Rad syncs the big
 items up to Notion. If it IS enabled: you may update the Notion Memory page directly as well.
 
+## DOC RECONCILIATION (every step)
+- The repo is the single source of truth for code. Notion lessons written as advance
+  reading are approximations until reconciled against the real code after the step is built.
+- After completing each step, output a clearly-formatted "RECONCILE BLOCK" containing:
+  (1) every file created or changed in this step, with its full final contents;
+  (2) key decisions or deviations from the plan;
+  (3) any version-specific surprises or gotchas.
+- Purpose: Rad pastes this block to the planning agent (Notion) to true-up the matching
+  Notion lesson so it exactly matches the real code.
+
 ## STACK (confirm current versions from official docs before installing)
 - Framework: Next.js 16 (App Router, React 19) · Language: TypeScript strict + Zod
 - UI: Tailwind + shadcn/ui + Lucide icons  (aurora light theme; dark ONLY in build workspace)
