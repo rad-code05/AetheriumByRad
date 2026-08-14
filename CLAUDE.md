@@ -72,6 +72,9 @@ items up to Notion. If it IS enabled: you may update the Notion Memory page dire
   (3) any version-specific surprises or gotchas.
 - Purpose: Rad pastes this block to the planning agent (Notion) to true-up the matching
   Notion lesson so it exactly matches the real code.
+- NEVER include .env contents or any real secret values in a RECONCILE BLOCK — file
+  contents means code files, not secrets. If a step changed .env, list only the variable
+  NAMES that were added, never their values.
 
 ## STACK (confirm current versions from official docs before installing)
 - Framework: Next.js 16 (App Router, React 19) · Language: TypeScript strict + Zod
