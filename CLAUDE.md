@@ -92,6 +92,7 @@ items up to Notion. If it IS enabled: you may update the Notion Memory page dire
   `src/lib` clients (prisma, clerk, ai, inngest, e2b, redis) · `prisma/` schema+migrations · `e2e/` Playwright.
 - Unit tests co-located as `*.test.ts(x)`. E2E in `e2e/`.
 - Naming: camelCase (vars/fns), PascalCase (components/types), SCREAMING_SNAKE (env).
+- **Auth guard is `src/proxy.ts`** (exported `proxy` function, wrapping `clerkMiddleware()`) — Next.js 16 renamed the `middleware.ts` file convention to `proxy.ts`. Always run on Node.js runtime (no Edge support in `proxy.ts`); a non-issue for us since we never configured Edge.
 
 ## THE GREEN-LIGHT CHECK (run before ending any phase; all must pass)
 ```bash
@@ -178,3 +179,8 @@ Role stored in Clerk `publicMetadata` for Phase 0 (not Postgres `User.role`) —
   more infrastructure than a Phase 0 proof-of-concept needs. **Revisit in Phase 4**: the admin
   dashboard needs to query/list users by role from Postgres, so build a Clerk webhook then to
   sync `role` into `User.role`.
+- **`middleware.ts` → `proxy.ts`** · Phase 0, step 0.15. Required by Next.js 16's rename of the
+  file convention — mechanical change, same `clerkMiddleware()` call, just a `git mv` (our export
+  was already a default export, which `proxy.ts` accepts same as `middleware.ts` did). No rejected
+  alternative — not optional once on Next.js 16, though `middleware.ts` alone still works with a
+  deprecation warning rather than a hard error.
