@@ -12,3 +12,24 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+model Project {
+  id        String    @id @default(cuid())
+  clerkId   String
+  title     String    @default("Untitled Project")
+  brief     Json?
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([clerkId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      String   // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+}
