@@ -14,4 +14,8 @@ paths:
 - Postgres requires the `@prisma/adapter-pg` driver adapter — Prisma 7 dropped the bundled Rust engine.
 - Every schema change needs a real migration: `npx prisma migrate dev --name <name>` — Rad runs
   this himself, it's the one command that touches the real Neon database.
-- Current model: minimal `User` (id/email/createdAt). Role is NOT stored here — see `auth.md`.
+- Current models: `User` (id/email/createdAt; role is NOT stored here — see `auth.md`), plus
+  `Project` (owned by a Clerk user via `clerkId`, has `title`/`brief` Json field) and `Message`
+  (belongs to a `Project`, `onDelete: Cascade`) added 2026-08-19 for Phase 1 chat/PRD work.
+- Ownership is enforced in the tRPC layer (`assertOwnsProject` in `message.ts`), not by RLS —
+  every `Project`/`Message` query must go through `protectedProcedure` and check `clerkId`.

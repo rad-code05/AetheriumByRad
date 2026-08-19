@@ -113,9 +113,13 @@ AND its phase-specific tests are green. Otherwise it is NOT done — log why.
 8. Log outcome in the Notion Error Log, update CURRENT STATE below, and commit.
 
 ## CURRENT STATE
-**Phase 0: DONE ✅ (2026-08-17).** Full green-light check passed, live on Vercel. **Phase 1 —
-Chat & PRD — next.** Full step-by-step history, all Error Log incidents, and the full Decision
-Log: **see Notion Memory** (link above) — kept current via the RECONCILE BLOCK workflow.
+**Phase 0: DONE ✅ (2026-08-17).** **Phase 1 — Chat & PRD — in progress.** Added `Project`/
+`Message` Prisma models plus `project`/`message` tRPC routers with Clerk-authenticated ownership
+checks (PR #33, #34 — 2026-08-19). Error Log: PR #33's `git add src/server` left the new schema +
+migration uncommitted, so CI/Vercel passed locally but failed on `main` (stale Prisma Client);
+fixed by committing the missing files in PR #34 — `main` is green again. Full step-by-step
+history, all Error Log incidents, and the full Decision Log: **see Notion Memory** (link above) —
+kept current via the RECONCILE BLOCK workflow.
 
 ## PHASE GATES
 Current phase's DoD/Tests: see Notion Memory §6. (Phase 0's gate is met — see CURRENT STATE above.)
