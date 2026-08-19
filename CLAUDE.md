@@ -35,7 +35,8 @@ just to get working code. Every session, work this way:
 2. End-to-end typesafety: TypeScript strict, Zod at every boundary, tRPC, Prisma. No `any` without a written reason.
 3. Secrets live in `.env` only. Never hardcode, never commit `.env`. Only variable NAMES may appear in docs.
 4. Every phase must pass its verification gate before the next phase begins.
-5. Small commits (Conventional Commits) → PR → CodeRabbit review → merge. Never push straight to main.
+5. Small commits (Conventional Commits) → PR → manual review (Rad + Claude Code), gated on
+   CI-green → merge. (CodeRabbit inactive under 10 stars — revisit later.) Never push straight to main.
 6. Validate all outside/AI data with Zod before trusting it.
 7. Long work runs in Inngest, never inside a request handler.
 8. Generated/untrusted code runs ONLY inside an E2B sandbox.

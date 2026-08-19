@@ -52,7 +52,7 @@ Every choice below was a deliberate trade-off, not a default.
 | Background jobs | **Inngest** | Durable, step-based execution with retries — builds take minutes and must survive failures |
 | Sandbox | **E2B** | Isolated micro-VMs so AI-generated code runs safely, with pause/resume snapshots |
 | Testing | **Vitest + React Testing Library + Playwright** | Fast unit/integration tests plus real-browser end-to-end coverage |
-| CI/CD | **GitHub Actions + CodeRabbit + Vercel** | Automated checks and AI review on every PR; auto-deploy on merge |
+| CI/CD | **GitHub Actions + Vercel** (CodeRabbit planned) | Automated checks on every PR; auto-deploy on merge. AI review via CodeRabbit is planned but currently inactive (repo is under its 10-star threshold for free auto-review) — PRs are manually reviewed instead |
 
 *(A deliberate note on scope: user roles are currently stored in Clerk metadata rather than a Postgres column — the simplest correct solution for the current phase, with the database-sync path scheduled for when the admin dashboard needs it.)*
 
@@ -61,7 +61,7 @@ Every choice below was a deliberate trade-off, not a default.
 ## Engineering practices
 
 - **End-to-end type safety** — TypeScript strict mode, tRPC across the client/server boundary, Zod validation on all external and AI input.
-- **CI on every pull request** — lint, type-check, unit tests, and end-to-end tests must pass before merge; PRs are auto-reviewed by CodeRabbit.
+- **CI on every pull request** — lint, type-check, unit tests, and end-to-end tests must pass before merge; PRs are manually reviewed (CodeRabbit auto-review is planned, currently inactive under its 10-star threshold).
 - **Real testing** — a unit suite plus Playwright end-to-end tests covering the authentication flows (logged-out redirect, authenticated access, and role-gated admin routes).
 - **Thin vertical slices** — each phase ships something that runs end-to-end, verified against an explicit Definition of Done, rather than big-bang integration.
 - **Documented decisions** — architectural choices, trade-offs, and deferred work are recorded so the reasoning is never lost.
