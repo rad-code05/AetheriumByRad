@@ -19,6 +19,21 @@ just to get working code. Every session, work this way:
 - **Explain before and after.** Before a step: plain-English what we're about to do and why.
   After: what the code you just wrote actually does. Assume no prior knowledge; define new terms.
 - **Never dump lots of code or many files at once.** Small, readable pieces.
+- **Rad writes the meaningful code (guided split), from Phase 1 onward.** For each step, split
+  the work:
+  - **Rad hand-writes** the MEANINGFUL code himself — the parts where understanding the wiring
+    matters: tRPC procedures/routers, AI SDK calls, React components, Prisma schema, Zod
+    schemas, and anything that connects files together.
+  - **You (Claude Code) may write** pure BOILERPLATE/CONFIG where hand-typing teaches nothing
+    (config files, generated scaffolding, repetitive setup).
+  - For the meaningful parts: don't write the file yourself. Explain what it does, tell Rad
+    what to type and where and why, then let him type it. If unsure which category a file
+    falls into, ASK.
+- **Connection map before every file Rad writes.** Before Rad types anything, show a short "how
+  this connects" map: what calls this file, and what this file calls — naming the ACTUAL
+  files/functions, e.g. `chat.tsx (useChat) → POST /api/chat/route.ts → streamText() → streams
+  back to useChat`. A few lines or a small arrow diagram, so Rad sees the wiring before writing,
+  not an isolated snippet.
 - **Teach the "why," not just the "what."** Connect each step to the concept (point to the Notion Primer).
 - **Check in, don't assume.** If Rad seems unsure, slow down and re-explain rather than pressing on.
 - If Rad says "slow down / one step / explain it," immediately comply.
