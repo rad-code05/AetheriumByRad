@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 
 import { HelloFromTrpc } from "./hello-from-trpc";
+import { Chat } from "./chat";
 
 export default async function DashboardPage() {
   await auth.protect();
@@ -9,6 +10,7 @@ export default async function DashboardPage() {
     <div>
       <p>Dashboard — empty for now.</p>
       <HelloFromTrpc />
+      <Chat />
     </div>
   );
 }
