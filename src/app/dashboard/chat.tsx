@@ -6,24 +6,31 @@ import { useEffect, useState } from "react";
 
 import { useTRPC } from "@/trpc/client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export function Chat() {
   const [input, setInput] = useState("");
   const trpc = useTRPC();
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
+  const projectsQuery = useQuery(trpc.project.list.queryOptions());
   const createProject = useMutation(trpc.project.create.mutationOptions());
   const createMessage = useMutation(trpc.message.create.mutationOptions());
 
+  const existingProjectId = projectsQuery.data?.[0]?.id ?? null;
+  const projectId = existingProjectId ?? createdProjectId;
+
   useEffect(() => {
-    createProject.mutate(
-      {},
-      {
-        onSuccess: (project) => setProjectId(project.id),
-      },
-    );
+    if (!projectsQuery.data) return;
+    if (projectsQuery.data.length === 0) {
+      createProject.mutate(
+        {},
+        {
+          onSuccess: (project) => setCreatedProjectId(project.id),
+        },
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [projectsQuery.data]);
 
   const { messages, sendMessage } = useChat({
     onFinish: ({ message }) => {
